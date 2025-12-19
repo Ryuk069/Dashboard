@@ -1,3 +1,4 @@
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Zap,
   House,
@@ -13,19 +14,19 @@ import {
   MessageSquareText,
   Power,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type SidebarProps = {
   sbc: boolean;
   toggle: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-
 const menuItems = [
   {
     id: "Dashboard",
     icon: House,
     label: "My Dashboard",
+    path: "/",
   },
   {
     id: "Application",
@@ -33,11 +34,14 @@ const menuItems = [
     label: "Applications",
     showMenu: false,
     submenu: [
-      { id: "todo", label: "ToDo" },
-      { id: "t", label: "ToDo" },
-      { id: "to", label: "ToDo" },
-      { id: "tod", label: "ToDo" },
-      { id: "too", label: "ToDo" },
+      { id: "todo", label: "ToDo", path: "/application/todo" },
+      { id: "weather", label: "Weather App" },
+      { id: "calender", label: "Calender" },
+      { id: "chat", label: "Chat app" },
+      { id: "Blog", label: "Blogs" },
+      { id: "Social", label: "Social App" },
+      { id: "File-Manager", label: "File Manager" },
+      { id: "Contact", label: "Contacts" },
     ],
   },
   {
@@ -45,56 +49,74 @@ const menuItems = [
     icon: IdCard,
     label: "Account",
     showMenu: false,
-    submenu: [{ id: "setting", label: "Settings" }],
+    submenu: [
+      { id: "settings", label: "Settings" },
+      { id: "Invoice", label: "Invoice List" },
+      { id: "create-invoice", label: "Settings" },
+      { id: "Billing", label: "Billings" },
+    ],
   },
   {
-    id: "Domain",
+    id: "domain",
     icon: GlobeLock,
     label: "Domains",
+    path: "/domain",
   },
   {
     id: "Databases",
     icon: Database,
     label: "Databases",
+    path: "/databases",
   },
   {
     id: "Metrics",
     icon: ChartSpline,
     label: "Metric",
+    path: "/metric",
   },
   {
     id: "Security",
     icon: DoorClosedLocked,
     label: "Security",
+    path: "/security",
   },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
+  const navigate = useNavigate();
+  const [activeMenu, setActiveMenu] = useState<string[]>(["Dashboard"]);
+  const [activeSubMenu, setActiveSubMenu] = useState<string[]>([]);
+  const { location } = useRouterState();
 
-  const [activeMenu,setActiveMenu] = useState<string[]>(["Dashboard"])
-  const [activeSubMenu,setActiveSubMenu] = useState<string[]>([])
+  const pathname = location.pathname;
 
-  console.log(activeMenu);
-  console.log(activeSubMenu);
-  
+  useEffect(() => {
+    menuItems.forEach((item) => {
+      if (item.path === pathname) {
+        setActiveMenu([item.id]);
+      }
+    });
+  }, [pathname]);
+
   function handleMenu(itemID: any) {
     if (activeMenu.includes(itemID) && !activeSubMenu.includes(itemID)) {
       // alert("noob")
       return;
     } else {
       const parentItem = menuItems.find((item) => item.id === itemID);
-  
+      console.log(parentItem);
+      
       if (parentItem?.submenu) {
-        if(activeSubMenu.includes(itemID)){
-             setActiveSubMenu(prev => prev.filter(item => item !== itemID));
-             setActiveMenu(prev => prev.filter(item => item !== itemID))
-        }else{
-
-          setActiveSubMenu(prev => [...prev,itemID])
-          setActiveMenu(prev => [...prev, itemID]);
+        if (activeSubMenu.includes(itemID)) {
+          setActiveSubMenu((prev) => prev.filter((item) => item !== itemID));
+          setActiveMenu((prev) => prev.filter((item) => item !== itemID));
+        } else {
+          setActiveSubMenu((prev) => [...prev, itemID]);
+          setActiveMenu((prev) => [...prev, itemID]);
         }
       } else {
         setActiveMenu([itemID]);
+        navigate({ to: `${parentItem?.path}` });
         setActiveSubMenu([]);
       }
     }
@@ -104,9 +126,9 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
     <div
       className={`${
         sbc ? "w-20" : "w-60"
-      } bg-slate-100 border-r flex flex-col relative z-10 border-slate-200 dark:bg-black transition-all duration-300 ease-in-out`}
+      } flex flex-col relative z-10 border-slate-200 transition-all duration-300 ease-in-out`}
     >
-      <div className="p-6 border-b border-slate-200/50 bg-slate-50 dark:bg-black">
+      <div className="p-6 border-b border-slate-200/50">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg bg-linear-to-r from-blue-600  to-purple-600">
             <Zap className="w-6 h-6 text-white" />
@@ -122,7 +144,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
         </div>
       </div>
 
-      <nav className="flex-1 p-4 overflow-y-auto overflow-x-hidden bg-slate-50 dark:bg-black">
+      <nav className="flex-1 p-4 overflow-y-clip">
         {menuItems.map((item) => {
           return (
             <div
@@ -132,8 +154,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
               <button
                 className={`${
                   activeMenu.includes(item.id)
-                    ? "text-red-700"
-                    : "dark:text-white hover:text-red-700"
+                    ? "text-[#0ad793]"
+                    : "dark:text-white hover:text-[#0ad793]"
                 } w-full flex items-center gap-2 p-3 cursor-pointer`}
                 onClick={() => handleMenu(item.id)}
               >
@@ -153,12 +175,16 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
               </button>
 
               {activeSubMenu.includes(item.id) && (
-                <div className={`${sbc ? "hidden" : "" } bg-red-300 flex flex-col items-center`}>
+                <div
+                  className={`${
+                    sbc ? "hidden" : ""
+                  } flex flex-col justify-around pb-3`}
+                >
                   {item?.submenu?.map((submenuitem) => {
                     return (
-                      <div key={submenuitem.id}>
-                        <div>{submenuitem.id}</div>
-                        <div>{submenuitem.label}</div>
+                      <div key={submenuitem.id} className="flex pl-5 gap-5 relative ">
+                        <div className="border border-[#0ad793]"></div>
+                        <div className=" flex-1 cursor-pointer mb-2 hover:text-[#0ad793]" onClick={() =>handleMenu(submenuitem.id)}>{submenuitem.label}</div>
                       </div>
                     );
                   })}
@@ -169,8 +195,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
         })}
       </nav>
 
-      <div className="p-1 border-t border-slate-200/50 bg-slate-50 dark:bg-black">
-        <div className="flex items-center justify-center p-2 rounded-2xl dark:border-2">
+      <div className="p-1 border-t border-slate-200/50">
+        <div className="flex items-center justify-center p-2 rounded-2xl">
           <ul
             className={`${
               sbc ? "flex-col gap-5" : ""

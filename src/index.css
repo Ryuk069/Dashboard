@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* li {
+  transition: inherit;
+} */
+
+.scrollbar-thin {
+  scrollbar-width: thin; /* auto | thin | none */
+}
+
+.scroll-container {
+  scrollbar-color: #0ad793 #ffffff; /* thumb | track */
+}
+
+.dark .scroll-container {
+  scrollbar-color: #0ad793 #1e293b; /* thumb | track */
+}

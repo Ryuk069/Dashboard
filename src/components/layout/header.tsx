@@ -6,8 +6,6 @@ type HeaderProps = {
 };
 
 const Header: React.FC<HeaderProps> = ({ sbc, toggle }) => {
-  
-  
   function changeTheme() {
     const isDark = document.documentElement.classList.contains("dark");
 
@@ -21,10 +19,15 @@ const Header: React.FC<HeaderProps> = ({ sbc, toggle }) => {
   }
 
   return (
-    <div className="bg-[#f4f7f6] border-b p-3 flex items-center border-slate-200/50 dark:bg-black">
+    <div className="bg-[#f4f7f6] p-3 flex items-center border-slate-200/50 dark:bg-black sticky">
       <div className="flex items-center w-full gap-5 justify-between md:justify-center bg-[#f4f7f6] dark:bg-black">
         <div className="flex items-center space-x-1">
-          <button onClick={()=>{toggle(!sbc)}} className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer dark:text-slate-300 dark:hover:bg-slate-800 transition-colors ">
+          <button
+            onClick={() => {
+              toggle(!sbc);
+            }}
+            className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer dark:text-slate-300 dark:hover:bg-slate-800 transition-colors "
+          >
             <Menu className="w-7 h-7" />
           </button>
           <h1 className="text-3xl dark:text-white">Luno</h1>
