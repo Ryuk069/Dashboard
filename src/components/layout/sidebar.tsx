@@ -23,101 +23,182 @@ type SidebarProps = {
 
 const menuItems = [
   {
-    id: "Dashboard",
+    id: "dashboard",
     icon: House,
     label: "My Dashboard",
-    path: "/",
+    path: "/dashboard",
   },
   {
     id: "Application",
     icon: MessageSquareDot,
     label: "Applications",
-    showMenu: false,
     submenu: [
-      { id: "todo", label: "ToDo", path: "/application/todo" },
-      { id: "weather", label: "Weather App" },
-      { id: "calender", label: "Calender" },
-      { id: "chat", label: "Chat app" },
-      { id: "Blog", label: "Blogs" },
-      { id: "Social", label: "Social App" },
-      { id: "File-Manager", label: "File Manager" },
-      { id: "Contact", label: "Contacts" },
+      {
+        id: "todo",
+        label: "ToDo",
+        path: "/dashboard/application/todo",
+        parent: "Application",
+      },
+      {
+        id: "weather",
+        label: "Weather App",
+        path: "/dashboard/application/weather",
+        parent: "Application",
+      },
+      {
+        id: "calender",
+        label: "Calender",
+        path: "/dashboard/application/calender",
+        parent: "Application",
+      },
+      {
+        id: "chat",
+        label: "Chat app",
+        path: "/dashboard/application/chat-app",
+        parent: "Application",
+      },
+      {
+        id: "Blog",
+        label: "Blogs",
+        path: "/dashboard/application/blog",
+        parent: "Application",
+      },
+      {
+        id: "Social",
+        label: "Social App",
+        path: "/dashboard/application/social-app",
+        parent: "Application",
+      },
+      {
+        id: "File-Manager",
+        label: "File Manager",
+        path: "/dashboard/application/file-manager",
+        parent: "Application",
+      },
+      {
+        id: "Contact",
+        label: "Contacts",
+        path: "/dashboard/application/contact",
+        parent: "Application",
+      },
     ],
   },
   {
     id: "Account",
     icon: IdCard,
     label: "Account",
-    showMenu: false,
     submenu: [
-      { id: "settings", label: "Settings" },
-      { id: "Invoice", label: "Invoice List" },
-      { id: "create-invoice", label: "Settings" },
-      { id: "Billing", label: "Billings" },
+      {
+        id: "settings",
+        label: "Settings",
+        path: "/dashboard/account/settings",
+        parent: "Account",
+      },
+      {
+        id: "Invoice",
+        label: "Invoice List",
+        path: "/dashboard/account/invoice",
+        parent: "Account",
+      },
+      {
+        id: "create-invoice",
+        label: "Create Invoice",
+        path: "/dashboard/account/create-invoice",
+        parent: "Account",
+      },
+      {
+        id: "Billing",
+        label: "Billings",
+        path: "/dashboard/account/billing",
+        parent: "Account",
+      },
     ],
   },
   {
     id: "domain",
     icon: GlobeLock,
     label: "Domains",
-    path: "/domain",
+    path: "/dashboard/domain",
   },
   {
     id: "Databases",
     icon: Database,
     label: "Databases",
-    path: "/databases",
+    path: "/dashboard/databases",
   },
   {
     id: "Metrics",
     icon: ChartSpline,
     label: "Metric",
-    path: "/metric",
+    path: "/dashboard/metric",
   },
   {
     id: "Security",
     icon: DoorClosedLocked,
     label: "Security",
-    path: "/security",
+    path: "/dashboard/security",
   },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
   const navigate = useNavigate();
-  const [activeMenu, setActiveMenu] = useState<string[]>(["Dashboard"]);
-  const [activeSubMenu, setActiveSubMenu] = useState<string[]>([]);
+  const [activeMenu, setActiveMenu] = useState<string[]>(["dashboard"]);
+  const [activeSubMenu, setActiveSubMenu] = useState<{
+    parent: string;
+    child: string;
+  }>({ parent: "", child: "" });
   const { location } = useRouterState();
 
-  const pathname = location.pathname;
+  const pathname = location.pathname.toLocaleLowerCase();
 
   useEffect(() => {
-    menuItems.forEach((item) => {
+    console.log(pathname);
+    let matched = false;
+    for (const item of menuItems) {
       if (item.path === pathname) {
         setActiveMenu([item.id]);
+        setActiveSubMenu({ parent: "", child: "" });
+        matched = true;
+        break;
       }
-    });
+
+      if (item.submenu) {
+        const sub = item.submenu.find((s) => s.path === pathname);
+        if (sub) {
+          setActiveMenu([item.id]);
+          setActiveSubMenu({ parent: item.id, child: sub.id });
+          matched = true;
+          break;
+        }
+      }
+    }
+
+    if (!matched) {
+      setActiveMenu([]);
+      setActiveSubMenu({ parent: "", child: "" });
+    }
   }, [pathname]);
 
-  function handleMenu(itemID: any) {
-    if (activeMenu.includes(itemID) && !activeSubMenu.includes(itemID)) {
-      // alert("noob")
-      return;
-    } else {
-      const parentItem = menuItems.find((item) => item.id === itemID);
-      console.log(parentItem);
-      
-      if (parentItem?.submenu) {
-        if (activeSubMenu.includes(itemID)) {
-          setActiveSubMenu((prev) => prev.filter((item) => item !== itemID));
-          setActiveMenu((prev) => prev.filter((item) => item !== itemID));
-        } else {
-          setActiveSubMenu((prev) => [...prev, itemID]);
-          setActiveMenu((prev) => [...prev, itemID]);
-        }
+  function handleMenu(item: any) {
+    if (activeMenu.includes(item.id)) {
+      if (item?.submenu && activeSubMenu.parent == item.id) {
+        setActiveMenu([]);
       } else {
-        setActiveMenu([itemID]);
-        navigate({ to: `${parentItem?.path}` });
-        setActiveSubMenu([]);
+        return;
+      }
+    } else {
+      if (item?.submenu) {
+        setActiveMenu((prev) => [...prev, item.id]);
+      } else {
+        if (item.icon) {
+          setActiveMenu([item.id]);
+          setActiveSubMenu({ parent: "", child: "" });
+          navigate({ to: item.path });
+        } else {
+          setActiveSubMenu({ parent: item.parent, child: item.id });
+          setActiveMenu([item.parent]);
+          navigate({ to: item.path });
+        }
       }
     }
   }
@@ -136,7 +217,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
           {!sbc && (
             <div className="flex-1">
               <h1 className="text-xl font-bold text-slate-800 dark:text-white/80 text-nowrap">
-                Server Admin
+                Ryuk's Server
               </h1>
               <p className="text-xs text-slate-500 dark:text-gray-300">Admin</p>
             </div>
@@ -153,11 +234,12 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
             >
               <button
                 className={`${
-                  activeMenu.includes(item.id)
+                  activeMenu.includes(item.id) ||
+                  activeSubMenu.parent == item.id
                     ? "text-[#0ad793]"
                     : "dark:text-white hover:text-[#0ad793]"
                 } w-full flex items-center gap-2 p-3 cursor-pointer`}
-                onClick={() => handleMenu(item.id)}
+                onClick={() => handleMenu(item)}
               >
                 <div>
                   <item.icon className="" />
@@ -166,7 +248,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
                 {item.submenu && !sbc && (
                   <div
                     className={`${
-                      activeSubMenu.includes(item.id) ? "rotate-90" : ""
+                      activeMenu.includes(item.id) ? "rotate-90" : ""
                     } absolute right-2`}
                   >
                     <ChevronRight className="w-4 h-4" />
@@ -174,17 +256,29 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
                 )}
               </button>
 
-              {activeSubMenu.includes(item.id) && (
+              {activeMenu.includes(item.id) && item?.submenu && (
                 <div
                   className={`${
                     sbc ? "hidden" : ""
                   } flex flex-col justify-around pb-3`}
                 >
-                  {item?.submenu?.map((submenuitem) => {
+                  {item.submenu.map((submenuitem) => {
                     return (
-                      <div key={submenuitem.id} className="flex pl-5 gap-5 relative ">
+                      <div
+                        key={submenuitem.id}
+                        className="flex pl-5 gap-5 relative "
+                      >
                         <div className="border border-[#0ad793]"></div>
-                        <div className=" flex-1 cursor-pointer mb-2 hover:text-[#0ad793]" onClick={() =>handleMenu(submenuitem.id)}>{submenuitem.label}</div>
+                        <div
+                          className={` ${
+                            activeSubMenu.child == submenuitem.id
+                              ? "text-[#0ad793]"
+                              : ""
+                          } flex-1 cursor-pointer mb-2 hover:text-[#0ad793]`}
+                          onClick={() => handleMenu(submenuitem)}
+                        >
+                          {submenuitem.label}
+                        </div>
                       </div>
                     );
                   })}
@@ -203,7 +297,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
             } flex flex-1  items-center justify-around overflow-x-hidden dark:text-white dark:border-2 p-2 rounded-lg`}
           >
             <li>
-              <CalendarCheck2 />
+              <CalendarCheck2 className=" text-[#0ad793] hover:text-amber-300" />
             </li>
             <li>
               <Files />

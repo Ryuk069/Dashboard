@@ -17,3 +17,8 @@
 .dark .scroll-container {
   scrollbar-color: #0ad793 #1e293b; /* thumb | track */
 }
+
+body{
+  overflow: hidden;
+}
+

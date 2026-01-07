@@ -23,6 +23,8 @@ const Header: React.FC<HeaderProps> = ({ sbc, toggle }) => {
       <div className="flex items-center w-full gap-5 justify-between md:justify-center bg-[#f4f7f6] dark:bg-black">
         <div className="flex items-center space-x-1">
           <button
+          aria-label="Collapsed sidebar"
+            title="Collapse Sidebar"
             onClick={() => {
               toggle(!sbc);
             }}
@@ -40,32 +42,52 @@ const Header: React.FC<HeaderProps> = ({ sbc, toggle }) => {
           />
         </div>
         <div className="flex items-center justify-end gap-2">
-          <button className="border-2 p-1 cursor-pointer dark:text-white block max-lg:hidden">
+          <button
+            className="border-2 p-1 cursor-pointer dark:text-white block max-lg:hidden"
+            aria-label="View notifications"
+          >
             Notification
           </button>
-          <button className="border-2 p-1 cursor-pointer dark:text-white hidden lg:inline">
-            <Expand />
+
+          <button
+            className="border-2 p-1 cursor-pointer dark:text-white hidden lg:inline"
+            aria-label="Expand dashboard"
+            title="Expand"
+          >
+            <Expand aria-hidden="true" />
           </button>
-          <button className="border-2 p-1 cursor-pointer dark:text-white">
-            <Globe />
+
+          <button
+            className="border-2 p-1 cursor-pointer dark:text-white"
+            aria-label="Change language"
+            title="Language"
+          >
+            <Globe aria-hidden="true" />
           </button>
-          <button className="border-2 p-1 cursor-pointer dark:text-white">
-            <Boxes />
+
+          <button
+            className="border-2 p-1 cursor-pointer dark:text-white"
+            aria-label="Open apps"
+            title="Apps"
+          >
+            <Boxes aria-hidden="true" />
           </button>
+
           <button
             className="border-2 p-1 cursor-pointer bg-slate-50 dark:border-blue-600 dark:text-white dark:bg-black"
             onClick={changeTheme}
+            aria-label="Toggle dark mode"
+            title="Toggle theme"
           >
-            <Moon />
+            <Moon aria-hidden="true" />
           </button>
+
           <button
-            className="border-2 p-1 cursor-pointer bg-slate-50 dark:border-blue-600 dark:text-white dark:bg-black"
-            onClick={changeTheme}
+            className="border-2 p-1 cursor-pointer dark:text-white"
+            aria-label="Open settings"
+            title="Settings"
           >
-            <Moon />
-          </button>
-          <button className="border-2 p-1 cursor-pointer dark:text-white">
-            <Settings />
+            <Settings aria-hidden="true" />
           </button>
         </div>
       </div>
