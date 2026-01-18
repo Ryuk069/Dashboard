@@ -1,23 +1,21 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import Header from "../../components/layout/header";
 import Sidebar from "../../components/layout/sidebar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/dashboard")({
-  component: RouteComponent,
+    beforeLoad: () => {
+    const user = localStorage.getItem("user");
+    if (!user) {
+      throw redirect({ to: "/login" });
+    }
+  },
+  component: RouteComponent
 
 });
 
 function RouteComponent() {
-  const [sbcollapsed, setSbcollapsed] = useState(false);
-
-  useEffect(() => {
-    if (localStorage.theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+  const [sbcollapsed, setSbcollapsed] = useState<boolean>(false);
 
   return (
     <>

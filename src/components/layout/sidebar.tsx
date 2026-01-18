@@ -180,21 +180,34 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
   }, [pathname]);
 
   function handleMenu(item: any) {
+    console.log("test 1");
+
     if (activeMenu.includes(item.id)) {
+      console.log("test 2");
       if (item?.submenu && activeSubMenu.parent == item.id) {
+        console.log("test 3");
         setActiveMenu([]);
       } else {
+        if (item?.submenu) {
+          console.log("test 4");
+          setActiveMenu((prev) => prev.filter((element) => element != item.id));
+        }
         return;
       }
     } else {
+      console.log("test 5");
       if (item?.submenu) {
+        console.log("test 6");
         setActiveMenu((prev) => [...prev, item.id]);
       } else {
+        console.log("test 7");
         if (item.icon) {
+          console.log("test 8");
           setActiveMenu([item.id]);
           setActiveSubMenu({ parent: "", child: "" });
           navigate({ to: item.path });
         } else {
+          console.log("test 9");
           setActiveSubMenu({ parent: item.parent, child: item.id });
           setActiveMenu([item.parent]);
           navigate({ to: item.path });
@@ -266,19 +279,27 @@ const Sidebar: React.FC<SidebarProps> = ({ sbc }) => {
                     return (
                       <div
                         key={submenuitem.id}
-                        className="flex pl-5 gap-5 relative "
+                        className="flex pl-5 relative "
                       >
                         <div className="border border-[#0ad793]"></div>
-                        <div
+                        <ul
                           className={` ${
                             activeSubMenu.child == submenuitem.id
                               ? "text-[#0ad793]"
                               : ""
-                          } flex-1 cursor-pointer mb-2 hover:text-[#0ad793]`}
+                          } flex-1 cursor-pointer mb-2 relative left-[13.5px]`}
                           onClick={() => handleMenu(submenuitem)}
                         >
+                          <li className={` ${
+                            activeSubMenu.child == submenuitem.id
+                              ? "list-disc"
+                              : "hover:list-disc"
+                          }`}>
+                            <p className="hover:text-[#0ad793]">
                           {submenuitem.label}
-                        </div>
+                            </p>
+                          </li>
+                        </ul>
                       </div>
                     );
                   })}

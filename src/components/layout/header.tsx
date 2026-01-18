@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ sbc, toggle }) => {
           >
             <Menu className="w-7 h-7" />
           </button>
-          <h1 className="text-3xl dark:text-white">Luno</h1>
+          <h1 className="text-3xl dark:text-white"></h1>
         </div>
         <div className="flex-1 hidden md:block">
           <input

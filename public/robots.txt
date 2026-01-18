@@ -1,6 +1,0 @@
-User-agent: *
-Disallow: /application/
-Disallow: /account/
-
-# You can change Disallow rules above. Place sitemap URL below.
-Sitemap: https://example.com/sitemap.xml
